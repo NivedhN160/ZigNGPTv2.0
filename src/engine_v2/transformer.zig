@@ -55,6 +55,20 @@ pub const SelfAttention = struct {
         try self.v_proj.parameters(allocator, list);
         try self.c_proj.parameters(allocator, list);
     }
+
+    pub fn save(self: *const SelfAttention, file: std.fs.File) !void {
+        try self.q_proj.save(file);
+        try self.k_proj.save(file);
+        try self.v_proj.save(file);
+        try self.c_proj.save(file);
+    }
+
+    pub fn load(self: *SelfAttention, file: std.fs.File) !void {
+        try self.q_proj.load(file);
+        try self.k_proj.load(file);
+        try self.v_proj.load(file);
+        try self.c_proj.load(file);
+    }
 };
 
 pub const FeedForward = struct {
@@ -77,6 +91,16 @@ pub const FeedForward = struct {
     pub fn parameters(self: *const FeedForward, allocator: Allocator, list: *std.ArrayList(*TensorNode)) !void {
         try self.c_fc.parameters(allocator, list);
         try self.c_proj.parameters(allocator, list);
+    }
+
+    pub fn save(self: *const FeedForward, file: std.fs.File) !void {
+        try self.c_fc.save(file);
+        try self.c_proj.save(file);
+    }
+
+    pub fn load(self: *FeedForward, file: std.fs.File) !void {
+        try self.c_fc.load(file);
+        try self.c_proj.load(file);
     }
 };
 
@@ -110,6 +134,20 @@ pub const TransformerBlock = struct {
         try self.attn.parameters(allocator, list);
         try self.ln_2.parameters(allocator, list);
         try self.mlp.parameters(allocator, list);
+    }
+
+    pub fn save(self: *const TransformerBlock, file: std.fs.File) !void {
+        try self.ln_1.save(file);
+        try self.attn.save(file);
+        try self.ln_2.save(file);
+        try self.mlp.save(file);
+    }
+
+    pub fn load(self: *TransformerBlock, file: std.fs.File) !void {
+        try self.ln_1.load(file);
+        try self.attn.load(file);
+        try self.ln_2.load(file);
+        try self.mlp.load(file);
     }
 };
 
@@ -165,6 +203,32 @@ pub const Transformer = struct {
         }
         try self.ln_f.parameters(allocator, list);
         try self.lm_head.parameters(allocator, list);
+    }
+
+    pub fn saveToBinaryFile(self: *const Transformer, path: []const u8) !void {
+        var file = try std.fs.cwd().createFile(path, .{});
+        defer file.close();
+
+        try self.wte.save(file);
+        try self.wpe.save(file);
+        for (self.blocks.items) |block| {
+            try block.save(file);
+        }
+        try self.ln_f.save(file);
+        try self.lm_head.save(file);
+    }
+
+    pub fn loadFromBinaryFile(self: *Transformer, path: []const u8) !void {
+        var file = try std.fs.cwd().openFile(path, .{});
+        defer file.close();
+
+        try self.wte.load(file);
+        try self.wpe.load(file);
+        for (self.blocks.items) |*block| {
+            try block.load(file);
+        }
+        try self.ln_f.load(file);
+        try self.lm_head.load(file);
     }
 };
 

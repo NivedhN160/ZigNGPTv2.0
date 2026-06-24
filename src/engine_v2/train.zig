@@ -94,6 +94,6 @@ pub fn main() !void {
             if (step > 50) break; // MVP just testing
         }
     }
-    
-    std.debug.print("Training complete.\n", .{});
+    try model.saveToBinaryFile("v2_stories.model");
+    std.debug.print("Training complete. Saved to v2_stories.model\n", .{});
 }

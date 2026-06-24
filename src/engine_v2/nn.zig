@@ -36,6 +36,20 @@ pub const Linear = struct {
         return xw;
     }
 
+    pub fn save(self: *const Linear, file: std.fs.File) !void {
+        try self.weight.save(file);
+        if (self.bias) |b| {
+            try b.save(file);
+        }
+    }
+
+    pub fn load(self: *Linear, file: std.fs.File) !void {
+        try self.weight.load(file);
+        if (self.bias) |b| {
+            try b.load(file);
+        }
+    }
+
     pub fn parameters(self: *const Linear, allocator: std.mem.Allocator, list: *std.ArrayList(*TensorNode)) !void {
         try list.append(allocator, self.weight);
         if (self.bias) |b| try list.append(allocator, b);
@@ -62,6 +76,14 @@ pub const Embedding = struct {
 
     pub fn forward(self: *const Embedding, allocator: std.mem.Allocator, indices: []const usize) !*TensorNode {
         return try TensorNode.embedding(allocator, self.weight, indices);
+    }
+
+    pub fn save(self: *const Embedding, file: std.fs.File) !void {
+        try self.weight.save(file);
+    }
+
+    pub fn load(self: *Embedding, file: std.fs.File) !void {
+        try self.weight.load(file);
     }
 
     pub fn parameters(self: *const Embedding, allocator: std.mem.Allocator, list: *std.ArrayList(*TensorNode)) !void {
@@ -92,6 +114,16 @@ pub const LayerNorm = struct {
         const norm = try TensorNode.normalize(allocator, x);
         const norm_gamma = try TensorNode.mul(allocator, norm, self.gamma);
         return try TensorNode.add(allocator, norm_gamma, self.beta);
+    }
+
+    pub fn save(self: *const LayerNorm, file: std.fs.File) !void {
+        try self.gamma.save(file);
+        try self.beta.save(file);
+    }
+
+    pub fn load(self: *LayerNorm, file: std.fs.File) !void {
+        try self.gamma.load(file);
+        try self.beta.load(file);
     }
 
     pub fn parameters(self: *const LayerNorm, allocator: std.mem.Allocator, list: *std.ArrayList(*TensorNode)) !void {

@@ -597,18 +597,32 @@ fn handleCommand(personality: *Personality, cmd: []const u8, allocator: Allocato
     else if (std.mem.startsWith(u8, cmd, "v2 ")) {
         const prompt = cmd[3..];
         
-        // MVP: initialize an empty model and generate one token to prove the engine is wired
-        var tok = try tokenizer_mod.Tokenizer.init(allocator, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,!? ");
+        // Load corpus for exact vocabulary mapping
+        var file = std.fs.cwd().openFile("stories_corpus.txt", .{}) catch |err| {
+            return try std.fmt.allocPrint(allocator, "Failed to open stories_corpus.txt: {}", .{err});
+        };
+        const file_size = try file.getEndPos();
+        const corpus = try file.readToEndAlloc(allocator, file_size);
+        defer allocator.free(corpus);
+        file.close();
+
+        var tok = try tokenizer_mod.Tokenizer.init(allocator, corpus);
         defer tok.deinit(allocator);
 
-        var model = try transformer_mod.Transformer.init(allocator, tok.vocabSize(), 32, 2, 64);
+        // Init with same dims as train.zig: embed_dim=64, num_layers=2, seq_len=32
+        var model = try transformer_mod.Transformer.init(allocator, tok.vocabSize(), 64, 2, 32);
         defer model.deinit(allocator);
+
+        // Load pre-trained weights
+        model.loadFromBinaryFile("v2_stories.model") catch |err| {
+            return try std.fmt.allocPrint(allocator, "Failed to load v2_stories.model: {}. Did you run train.zig?", .{err});
+        };
 
         const encoded = try tok.encode(allocator, prompt);
         defer allocator.free(encoded);
 
-        // Limit encoded length to max_seq_len (64)
-        const seq_len = if (encoded.len > 64) 64 else encoded.len;
+        // Limit encoded length to max_seq_len (32)
+        const seq_len = if (encoded.len > 32) 32 else encoded.len;
         const input_indices = encoded[0..seq_len];
         
         var arena = std.heap.ArenaAllocator.init(allocator);

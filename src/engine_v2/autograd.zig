@@ -563,6 +563,16 @@ pub const TensorNode = struct {
             try topo.items[i].backwardStep();
         }
     }
+
+    pub fn save(self: *TensorNode, file: std.fs.File) !void {
+        const bytes = std.mem.sliceAsBytes(self.data.data);
+        try file.writeAll(bytes);
+    }
+
+    pub fn load(self: *TensorNode, file: std.fs.File) !void {
+        const bytes = std.mem.sliceAsBytes(self.data.data);
+        _ = try file.readAll(bytes);
+    }
 };
 
 const testing = std.testing;
