@@ -1,0 +1,5 @@
+/genius
+hi
+what is this?
+/exit
+

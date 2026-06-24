@@ -1,0 +1,1 @@
+const std = @import("std"); pub fn main() !void { const res = try std.process.Child.run(.{ .allocator = std.heap.page_allocator, .argv = &[_][]const u8{"curl.exe", "--version"} }); std.debug.print("{s}", .{res.stdout}); }

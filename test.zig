@@ -1,0 +1,1 @@
+const std = @import("std"); pub fn main() !void { var gpa = std.heap.page_allocator; var buffer: [1024]u8 = undefined; var stdin_reader = std.fs.File.stdin().reader(&buffer); _ = try stdin_reader.readUntilDelimiterAlloc(gpa, '\n', 1024); }

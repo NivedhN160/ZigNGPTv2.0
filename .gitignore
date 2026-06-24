@@ -1,0 +1,7 @@
+.zig-cache/
+zig-out/
+stories/
+*.model
+*.pdb
+*.obj
+*.exe

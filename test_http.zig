@@ -1,0 +1,1 @@
+const std = @import("std"); pub fn main() !void { var client = std.http.Client{ .allocator = std.heap.page_allocator }; defer client.deinit(); var buf: [4096]u8 = undefined; var req = try client.open(.GET, try std.Uri.parse("http://example.com"), .{ .server_header_buffer = &buf }); defer req.deinit(); try req.send(); try req.finish(); }
