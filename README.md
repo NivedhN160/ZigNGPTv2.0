@@ -1,14 +1,16 @@
 <div align="center">
 
-# 🧠 ZigNGPTv1.0
+# 🧠 ZigNGPT v2.0
 ### *Your Offline, Ultra-Fast, Sarcastic & Highly-Intelligent AI Assistant*
 
 [![Zig Version](https://img.shields.io/badge/Zig-0.15.0-orange?style=for-the-badge&logo=zig)](https://ziglang.org/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 [![Memory Safe](https://img.shields.io/badge/Memory-Safe_&_Fast-success?style=for-the-badge)](https://ziglang.org/)
-[![Status](https://img.shields.io/badge/Status-Fully_Operational-brightgreen?style=for-the-badge)](#)
+[![Status](https://img.shields.io/badge/Status-Upgrading_to_V2-blue?style=for-the-badge)](#)
 
 *An entirely local, extremely lightweight, zero-dependency Large Language Model orchestrator written in Zig.*
+
+**ZigNGPT is evolving!** V1.0 brought the blazing fast local Trigram/Markov text engine. **V2.0 introduces a from-scratch Custom Neural Network Autograd Engine and full GPT Transformer Architecture**—training live locally on its own custom extracted data.
 
 [Features](#-interactive-features) • [Installation](#-installation--quick-start) • [Commands](#-interactive-command-center) • [Architecture](#-system-architecture)
 
@@ -36,10 +38,25 @@ Using `/search <query>`, the AI drops into the background and uses system-level 
 </details>
 
 <details>
-<summary><b>🧠 Localized Trigram Modeling (Click to expand)</b></summary>
+<summary><b>🧠 Localized Trigram Modeling (V1 Fallback Mode) (Click to expand)</b></summary>
 <br>
 Using `model.zig`, ZigNGPT reads incredibly fast offline binary Markov chain files (`.model`). It maps out millions of probabilities instantly using Zig's unmanaged `HashMap` and `std.heap.page_allocator`, meaning zero latency and zero privacy concerns.
 </details>
+
+<details>
+<summary><b>🔥 V2 Custom Transformer & Autograd Engine (Click to expand)</b></summary>
+<br>
+The new core of ZigNGPT is a completely custom-built Neural Network engine (`engine_v2/`). We implemented a pure Zig <b>Autograd</b> system that computes dynamic mathematical graphs via backpropagation. It powers a custom <b>Self-Attention Transformer Block</b> architecture built strictly on standard library math functions. Train it yourself locally on raw script files!
+</details>
+
+---
+
+## 💾 Binaries & Corpora Data
+
+> **Notice:** The `.bin` weight files, `.model` dumps, and massive corpus `.txt` training datasets are completely untracked from Git to prevent massive repository bloat.
+
+- **To run V1 Trigram Models**: Generate `geeta.model` and others locally using the legacy extraction tools before booting the CLI.
+- **To run the V2 Transformer**: The neural network automatically ingests `stories_corpus.txt` to continuously backpropagate parameter gradients when you launch the training script.
 
 ---
 
@@ -113,6 +130,7 @@ Once you've booted up the executable, you can alter its logic gates at runtime. 
 - 🧮 **`/math <expr>`**: Ex: `/math 50 * 50`. Solves calculations using custom stack parsers.
 - 📜 **`/haiku`**: Auto-generates a procedural, never-before-seen Haiku based on currently loaded Markov chains.
 - ⚔️ **`/simulate <A> <B>`**: Ex: `/simulate Socrates Nietzsche`. Instantiates two sub-models and auto-generates a philosophical debate between them.
+- 🤖 **`/v2 <prompt>`**: Invokes the bleeding-edge Transformer architecture mathematically generating the next bytes of sequence!
 
 ---
 
